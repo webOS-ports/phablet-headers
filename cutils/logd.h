@@ -20,7 +20,7 @@
 /* the stable/frozen log-related definitions have been
  * moved to this header, which is exposed by the NDK
  */
-#include "log.h"
+#include <android/log.h>
 
 /* the rest is only used internally by the system */
 #include <time.h>
