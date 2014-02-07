@@ -47,6 +47,9 @@ typedef enum {
     AUDIO_STREAM_ENFORCED_AUDIBLE = 7, /* Sounds that cannot be muted by user and must be routed to speaker */
     AUDIO_STREAM_DTMF             = 8,
     AUDIO_STREAM_TTS              = 9,
+#ifdef QCOM_FM_ENABLED
+    AUDIO_STREAM_FM               = 10,
+#endif
 
     AUDIO_STREAM_CNT,
     AUDIO_STREAM_MAX              = AUDIO_STREAM_CNT - 1,
@@ -68,6 +71,10 @@ typedef enum {
                                           /* An example of remote presentation is Wifi Display */
                                           /*  where a dongle attached to a TV can be used to   */
                                           /*  play the mix captured by this audio source.      */
+#if defined(QCOM_FM_ENABLED) || defined(STE_FM)
+    AUDIO_SOURCE_FM_RX               = 9,
+    AUDIO_SOURCE_FM_RX_A2DP          = 10,
+#endif
     AUDIO_SOURCE_CNT,
     AUDIO_SOURCE_MAX                 = AUDIO_SOURCE_CNT - 1,
 } audio_source_t;
@@ -365,6 +372,8 @@ enum {
     AUDIO_DEVICE_OUT_ANC_HEADSET               = 0x10000,
     AUDIO_DEVICE_OUT_ANC_HEADPHONE             = 0x20000,
     AUDIO_DEVICE_OUT_PROXY                     = 0x40000,
+#endif
+#if defined(QCOM_FM_ENABLED) || defined(STE_FM)
     AUDIO_DEVICE_OUT_FM                        = 0x80000,
     AUDIO_DEVICE_OUT_FM_TX                     = 0x100000,
 #endif
@@ -389,6 +398,8 @@ enum {
                                  AUDIO_DEVICE_OUT_ANC_HEADSET |
                                  AUDIO_DEVICE_OUT_ANC_HEADPHONE |
                                  AUDIO_DEVICE_OUT_PROXY |
+#endif
+#if defined(QCOM_FM_ENABLED) || defined(STE_FM)
                                  AUDIO_DEVICE_OUT_FM |
                                  AUDIO_DEVICE_OUT_FM_TX |
 #endif
@@ -435,6 +446,8 @@ enum {
 #ifdef QCOM_HARDWARE
     AUDIO_DEVICE_IN_ANC_HEADSET           = AUDIO_DEVICE_BIT_IN | 0x2000,
     AUDIO_DEVICE_IN_PROXY                 = AUDIO_DEVICE_BIT_IN | 0x4000,
+#endif
+#if defined(QCOM_FM_ENABLED) || defined(STE_FM)
     AUDIO_DEVICE_IN_FM_RX                 = AUDIO_DEVICE_BIT_IN | 0x8000,
     AUDIO_DEVICE_IN_FM_RX_A2DP            = AUDIO_DEVICE_BIT_IN | 0x10000,
 #endif
@@ -456,9 +469,11 @@ enum {
                                AUDIO_DEVICE_IN_USB_DEVICE |
 #ifdef QCOM_HARDWARE
                                AUDIO_DEVICE_IN_ANC_HEADSET |
+                               AUDIO_DEVICE_IN_PROXY |
+#endif
+#if defined(QCOM_FM_ENABLED) || defined(STE_FM)
                                AUDIO_DEVICE_IN_FM_RX |
                                AUDIO_DEVICE_IN_FM_RX_A2DP |
-                               AUDIO_DEVICE_IN_PROXY |
 #endif
                                AUDIO_DEVICE_IN_DEFAULT),
     AUDIO_DEVICE_IN_ALL_SCO = AUDIO_DEVICE_IN_BLUETOOTH_SCO_HEADSET,
@@ -499,26 +514,41 @@ typedef enum {
 
 static inline bool audio_is_output_device(audio_devices_t device)
 {
+#ifdef ICS_AUDIO_BLOB
+    if ((popcount(device) == 1) && ((device & ~AUDIO_DEVICE_OUT_ALL) == 0))
+#else
     if (((device & AUDIO_DEVICE_BIT_IN) == 0) &&
             (popcount(device) == 1) && ((device & ~AUDIO_DEVICE_OUT_ALL) == 0))
+#endif
         return true;
+
     else
         return false;
+
 }
 
 static inline bool audio_is_input_device(audio_devices_t device)
 {
+#ifdef ICS_AUDIO_BLOB
+    if ((popcount(device) == 1) && ((device & ~AUDIO_DEVICE_IN_ALL) == 0)) {
+#else
     if ((device & AUDIO_DEVICE_BIT_IN) != 0) {
         device &= ~AUDIO_DEVICE_BIT_IN;
         if ((popcount(device) == 1) && ((device & ~AUDIO_DEVICE_IN_ALL) == 0))
+#endif
             return true;
     }
     return false;
+
 }
 
 static inline bool audio_is_output_devices(audio_devices_t device)
 {
+#ifdef ICS_AUDIO_BLOB
+    return (device & ~AUDIO_DEVICE_OUT_ALL) == 0;
+#else
     return (device & AUDIO_DEVICE_BIT_IN) == 0;
+#endif
 }
 
 
