@@ -1,15 +1,16 @@
 ================================================
-hardware/libhardware @ Fri Feb  7 19:23:06 CET 2014
+hardware/libhardware @ Tue Jun 17 11:32:18 CEST 2014
 ================================================
-+ cd /home/morphis/work/phablet-trusty
++ cd /home/morphis/work/wop/cm-wop-11.0/
 + repo status hardware/libhardware
-nothing to commit (working directory clean)
-+ cd /home/morphis/work/phablet-trusty/hardware/libhardware
+project hardware/libhardware/                   (*** NO BRANCH ***)
+ --	include/hardware/.fb.h.swp
++ cd /home/morphis/work/wop/cm-wop-11.0//hardware/libhardware
 + git show-ref --head
-86fc2992b5a91da8840637f90cf4453f75e44bf0 HEAD
-86fc2992b5a91da8840637f90cf4453f75e44bf0 refs/remotes/m/phablet-trusty
-86fc2992b5a91da8840637f90cf4453f75e44bf0 refs/remotes/phablet/phablet-trusty
-48697f6dc249d1238243677de77d3a0eb6a17b3f refs/tags/android-4.2.2_r1
+bcca47ff3b2524986c432bc60eaf341306ef47da HEAD
+c41a16b2333418e0925b9b413fc4406e77954af4 refs/remotes/github/cm-10.1
+bcca47ff3b2524986c432bc60eaf341306ef47da refs/remotes/github/cm-11.0
+bcca47ff3b2524986c432bc60eaf341306ef47da refs/remotes/m/wop-11.0
 07af9b902495e174248d5a3fb2157d5d186c2770 refs/tags/cm-10.1-M1
 af115871b4224c7196d7286378bb8a60606adc29 refs/tags/cm-10.1-M2
 689743c7b8786a186bbf1ecc7fe43b3176827499 refs/tags/cm-10.1-M3
@@ -21,28 +22,34 @@ af115871b4224c7196d7286378bb8a60606adc29 refs/tags/cm-10.1-M2
 86fc2992b5a91da8840637f90cf4453f75e44bf0 refs/tags/cm-10.1.0-RC5
 86fc2992b5a91da8840637f90cf4453f75e44bf0 refs/tags/cm-10.1.1
 86fc2992b5a91da8840637f90cf4453f75e44bf0 refs/tags/cm-10.1.2
+c41a16b2333418e0925b9b413fc4406e77954af4 refs/tags/cm-10.1.3
+c41a16b2333418e0925b9b413fc4406e77954af4 refs/tags/cm-10.1.3-RC1
+c41a16b2333418e0925b9b413fc4406e77954af4 refs/tags/cm-10.1.3-RC2
+d8b4ff719e01676914673f4ef8171dc28ffa8084 refs/tags/cm-10.2-M1
+7f0e0cafc12e2ebead38917ef472ea2d77d50096 refs/tags/cm-10.2.0
+7f0e0cafc12e2ebead38917ef472ea2d77d50096 refs/tags/cm-10.2.1
 263df4a734983e90b015cd80b9ef844e0aeb92b6 refs/tags/cm-7.0.0
 263df4a734983e90b015cd80b9ef844e0aeb92b6 refs/tags/cm-7.0.1
 263df4a734983e90b015cd80b9ef844e0aeb92b6 refs/tags/cm-7.0.2.1
 263df4a734983e90b015cd80b9ef844e0aeb92b6 refs/tags/cm-7.0.3
 f42ba75a7e5138d1578e0ec22d91e47d796c3409 refs/tags/cm-7.1.0
 + git remote -v
-phablet	../phablet-mirror/CyanogenMod/android_hardware_libhardware (fetch)
-phablet	../phablet-mirror/CyanogenMod/android_hardware_libhardware (push)
+github	https://github.com/CyanogenMod/android_hardware_libhardware (fetch)
+github	https://github.com/CyanogenMod/android_hardware_libhardware (push)
 
 
 ================================================
-hardware/libhardware_legacy @ Fri Feb  7 19:23:06 CET 2014
+hardware/libhardware_legacy @ Tue Jun 17 11:32:18 CEST 2014
 ================================================
-+ cd /home/morphis/work/phablet-trusty
++ cd /home/morphis/work/wop/cm-wop-11.0/
 + repo status hardware/libhardware_legacy
 nothing to commit (working directory clean)
-+ cd /home/morphis/work/phablet-trusty/hardware/libhardware_legacy
++ cd /home/morphis/work/wop/cm-wop-11.0//hardware/libhardware_legacy
 + git show-ref --head
-59342924744d8bed8fc4acce4abbd89e61a56ce4 HEAD
-59342924744d8bed8fc4acce4abbd89e61a56ce4 refs/remotes/m/phablet-trusty
-59342924744d8bed8fc4acce4abbd89e61a56ce4 refs/remotes/phablet/phablet-trusty
-a7c17deb32fe28230b77b0dff17bb113088a5c16 refs/tags/android-4.2.2_r1
+5e06c7b3509d1be0d1fb6830248cb4845e0482ac HEAD
+72c482c6d522fdf33c8e934a78b30b7760423e36 refs/remotes/github/cm-10.1
+5e06c7b3509d1be0d1fb6830248cb4845e0482ac refs/remotes/github/cm-11.0
+5e06c7b3509d1be0d1fb6830248cb4845e0482ac refs/remotes/m/wop-11.0
 7bbb31f670965d0e29ef0ff398a367522cdb4507 refs/tags/cm-10.1-M1
 0b80bd63c6b1b6970226913849c61836daa16af0 refs/tags/cm-10.1-M2
 e7b58b249036231b667665fcd6c86ed6f73b16dc refs/tags/cm-10.1-M3
@@ -54,74 +61,116 @@ e7b58b249036231b667665fcd6c86ed6f73b16dc refs/tags/cm-10.1.0-RC4
 e7b58b249036231b667665fcd6c86ed6f73b16dc refs/tags/cm-10.1.0-RC5
 e7b58b249036231b667665fcd6c86ed6f73b16dc refs/tags/cm-10.1.1
 e7b58b249036231b667665fcd6c86ed6f73b16dc refs/tags/cm-10.1.2
+0addf33abb57d604328d0fae1cc21a03fe7b1dd7 refs/tags/cm-10.1.3
+0addf33abb57d604328d0fae1cc21a03fe7b1dd7 refs/tags/cm-10.1.3-RC1
+0addf33abb57d604328d0fae1cc21a03fe7b1dd7 refs/tags/cm-10.1.3-RC2
+531060a5cf67e1fb85461bed2dc3bdac1ac75efa refs/tags/cm-10.2-M1
+e3167c611b0fd79de1b17a7c5010cbe1cdad43fb refs/tags/cm-10.2.0
+e3167c611b0fd79de1b17a7c5010cbe1cdad43fb refs/tags/cm-10.2.1
 a14981a46b48b59a2397ab3f1f221eb93d491e02 refs/tags/cm-7.0.0
 8315a3dc93cc2b4e50e23d3150e603ef865ee1f4 refs/tags/cm-7.0.1
 8315a3dc93cc2b4e50e23d3150e603ef865ee1f4 refs/tags/cm-7.0.2.1
 8315a3dc93cc2b4e50e23d3150e603ef865ee1f4 refs/tags/cm-7.0.3
 9b7adac0daa7024f3fcc8491caefd82ecd75f9ba refs/tags/cm-7.1.0
 + git remote -v
-phablet	../phablet-mirror/CyanogenMod/android_hardware_libhardware_legacy (fetch)
-phablet	../phablet-mirror/CyanogenMod/android_hardware_libhardware_legacy (push)
+github	https://github.com/CyanogenMod/android_hardware_libhardware_legacy (fetch)
+github	https://github.com/CyanogenMod/android_hardware_libhardware_legacy (push)
 
 
 ================================================
-system/core @ Fri Feb  7 19:23:06 CET 2014
+system/core @ Tue Jun 17 11:32:18 CEST 2014
 ================================================
-+ cd /home/morphis/work/phablet-trusty
++ cd /home/morphis/work/wop/cm-wop-11.0/
 + repo status system/core
 nothing to commit (working directory clean)
-+ cd /home/morphis/work/phablet-trusty/system/core
++ cd /home/morphis/work/wop/cm-wop-11.0//system/core
 + git show-ref --head
-6182f3d9f9be7b4e8da0b5d356e48b26c4b10ba6 HEAD
-6182f3d9f9be7b4e8da0b5d356e48b26c4b10ba6 refs/remotes/m/phablet-trusty
-6182f3d9f9be7b4e8da0b5d356e48b26c4b10ba6 refs/remotes/phablet/phablet-trusty
-4f247d753a8865cd16292ff0b720b72c28049786 refs/tags/android-4.2.2_r1
+a9847b46ebb95b53e6372984b754f22f9e9ad568 HEAD
+a9847b46ebb95b53e6372984b754f22f9e9ad568 refs/heads/wop-11.0
+d54d06a41b12aa2ac55c13ca0b0385ab92b16ce4 refs/remotes/github/cm-10.1
+bf140a917cbdc1692ef67edec77fbe63aae060a3 refs/remotes/github/cm-11.0
+72fee72f35a787bab6321e2a8c9d4bae53b50b4a refs/remotes/github/wop-10.1
+a9847b46ebb95b53e6372984b754f22f9e9ad568 refs/remotes/github/wop-11.0
+a9847b46ebb95b53e6372984b754f22f9e9ad568 refs/remotes/m/wop-11.0
+ddca232a18c3d80168639691584752d796d3e5eb refs/remotes/wop/cm-10.1
+1a51d7fefe18a7142a5483a9d3345beee230fe16 refs/remotes/wop/cm-10.1-staging
+84c0f28ff16f7808349831885547bbdb499b739f refs/remotes/wop/cm-9.0.0
+67ffceadeab46d4a43aadac0f574b14e844e01a5 refs/remotes/wop/cm-9.1.0
+f53886f4b72e4adec0d16cb0286feb5e81aa2f3b refs/remotes/wop/donut
+440ac99e6f935130ef6b6a22e25abe1696168628 refs/remotes/wop/eclair
+3519f031cb654b711cff28b624d6f85afc2fd455 refs/remotes/wop/froyo
+3519f031cb654b711cff28b624d6f85afc2fd455 refs/remotes/wop/froyo-stable
+20fb3b0514c5d50c32dca377fa815b5403f06b9e refs/remotes/wop/gb-release-7.2
+56aeff168c40a5ddf5c80a760df23e87de316a14 refs/remotes/wop/gingerbread
+30eacd1a575284d70b270b704888b134d26101c5 refs/remotes/wop/gingerbread-release
+0aaede53d7d64e57e9f69dea393cc0ae27fba85a refs/remotes/wop/ics
+67ffceadeab46d4a43aadac0f574b14e844e01a5 refs/remotes/wop/ics-release
+50de86cf3d5e7336b9d5059a54d90c69a1d25436 refs/remotes/wop/jellybean
+d8aa8ab7424be375e4408ab360c000ac8b05d15d refs/remotes/wop/jellybean-stable
+0b8a83c2e5b112a9b75e6ceb0013bd9769c32dac refs/remotes/wop/mr1.1-staging
+f888e8957211b95f27a9822f84c25329261eded6 refs/remotes/wop/wop-10.1
+a9847b46ebb95b53e6372984b754f22f9e9ad568 refs/remotes/wop/wop-11.0
+c57fe9f836fcf40995384127cb855e9ce8867b12 refs/remotes/wop/wop/master
 171456b69e744e9e201a51947227fc63001562c4 refs/tags/cm-10.1-M1
 61a20d6cb3029e166572bd7312db3d5d1d4a311c refs/tags/cm-10.1-M2
 823c688376292596edaa2846a005d1398a3c8d12 refs/tags/cm-10.1-M3
+4db5bfff396dffbe3b0b03fb68acbac8b0b9837f refs/tags/cm-10.1.0
 1a51d7fefe18a7142a5483a9d3345beee230fe16 refs/tags/cm-10.1.0-RC1
 1a51d7fefe18a7142a5483a9d3345beee230fe16 refs/tags/cm-10.1.0-RC2
-fee496b0ffcfc0fd1598d5381cc101b13a689200 refs/tags/cm-10.1.2
+4db5bfff396dffbe3b0b03fb68acbac8b0b9837f refs/tags/cm-10.1.0-RC3
+4db5bfff396dffbe3b0b03fb68acbac8b0b9837f refs/tags/cm-10.1.0-RC4
+4db5bfff396dffbe3b0b03fb68acbac8b0b9837f refs/tags/cm-10.1.0-RC5
+4db5bfff396dffbe3b0b03fb68acbac8b0b9837f refs/tags/cm-10.1.1
+4db5bfff396dffbe3b0b03fb68acbac8b0b9837f refs/tags/cm-10.1.2
+ba213e9edf578a3c661b32aece87b3dcdf5a4c1f refs/tags/cm-10.1.3
+83994198b5c0ef66616759249aa1840557008284 refs/tags/cm-10.1.3-RC1
+83994198b5c0ef66616759249aa1840557008284 refs/tags/cm-10.1.3-RC2
+ee7480206abca301be9e8a0808cf142f013fd9ed refs/tags/cm-10.2-M1
+3bc302960f44f832c80cf47da6bff5823007e93f refs/tags/cm-10.2.0
+30e77025e2608a5f476e1ed31a9b9061e8328989 refs/tags/cm-10.2.1
 9c9353b9d2ade37d9dbaa10bbf00a2e6de82a952 refs/tags/cm-7.0.0
 fe00b97699fb552c65eaef7cc9281857024ab900 refs/tags/cm-7.0.1
 fe00b97699fb552c65eaef7cc9281857024ab900 refs/tags/cm-7.0.2.1
 fe00b97699fb552c65eaef7cc9281857024ab900 refs/tags/cm-7.0.3
 30eacd1a575284d70b270b704888b134d26101c5 refs/tags/cm-7.1.0
 + git remote -v
-phablet	../phablet-mirror/CyanogenMod/android_system_core (fetch)
-phablet	../phablet-mirror/CyanogenMod/android_system_core (push)
+github	https://github.com/webOS-ports/android_system_core (fetch)
+github	https://github.com/webOS-ports/android_system_core (push)
+wop	git@github.com:webOS-ports/android_system_core.git (fetch)
+wop	git@github.com:webOS-ports/android_system_core.git (push)
 
 
 ================================================
-external/kernel-headers @ Fri Feb  7 19:23:06 CET 2014
+external/libnfc-nxp @ Tue Jun 17 11:32:18 CEST 2014
 ================================================
-+ cd /home/morphis/work/phablet-trusty
-+ repo status external/kernel-headers
++ cd /home/morphis/work/wop/cm-wop-11.0/
++ repo status external/libnfc-nxp
 nothing to commit (working directory clean)
-+ cd /home/morphis/work/phablet-trusty/external/kernel-headers
++ cd /home/morphis/work/wop/cm-wop-11.0//external/libnfc-nxp
 + git show-ref --head
-4e9b00424f752067ad7a358159b14cb34b485e6f HEAD
-4e9b00424f752067ad7a358159b14cb34b485e6f refs/remotes/m/phablet-trusty
-4e9b00424f752067ad7a358159b14cb34b485e6f refs/remotes/phablet/phablet-trusty
-66111e8ee366cc5401fceaf4053edf3ea5e4888b refs/tags/android-4.2.2_r1
-4af6a3c42e273ab8326bba37f44784b6a6e8cdea refs/tags/cm-10.1-M1
-4e9b00424f752067ad7a358159b14cb34b485e6f refs/tags/cm-10.1-M2
-4e9b00424f752067ad7a358159b14cb34b485e6f refs/tags/cm-10.1-M3
-4e9b00424f752067ad7a358159b14cb34b485e6f refs/tags/cm-10.1.0
-4e9b00424f752067ad7a358159b14cb34b485e6f refs/tags/cm-10.1.0-RC1
-4e9b00424f752067ad7a358159b14cb34b485e6f refs/tags/cm-10.1.0-RC2
-4e9b00424f752067ad7a358159b14cb34b485e6f refs/tags/cm-10.1.0-RC3
-4e9b00424f752067ad7a358159b14cb34b485e6f refs/tags/cm-10.1.0-RC4
-4e9b00424f752067ad7a358159b14cb34b485e6f refs/tags/cm-10.1.0-RC5
-4e9b00424f752067ad7a358159b14cb34b485e6f refs/tags/cm-10.1.1
-4e9b00424f752067ad7a358159b14cb34b485e6f refs/tags/cm-10.1.2
-8abdcd4098f266e438e7129a3dfe311005686431 refs/tags/cm-7.1.0
+4b9dbbb9a8aa869cca086e2d5d726318bb2b8c27 HEAD
+4b9dbbb9a8aa869cca086e2d5d726318bb2b8c27 refs/remotes/github/cm-11.0
+4b9dbbb9a8aa869cca086e2d5d726318bb2b8c27 refs/remotes/m/wop-11.0
+dd55580a6f3d72175f0cb78c9fc4fac59cf9be09 refs/tags/cm-10.1-M1
+f64f7e90f9c0dd6f4c52c66a5fd54d9af754c675 refs/tags/cm-10.1-M2
+f64f7e90f9c0dd6f4c52c66a5fd54d9af754c675 refs/tags/cm-10.1-M3
+f64f7e90f9c0dd6f4c52c66a5fd54d9af754c675 refs/tags/cm-10.1.0
+f64f7e90f9c0dd6f4c52c66a5fd54d9af754c675 refs/tags/cm-10.1.0-RC1
+f64f7e90f9c0dd6f4c52c66a5fd54d9af754c675 refs/tags/cm-10.1.0-RC2
+f64f7e90f9c0dd6f4c52c66a5fd54d9af754c675 refs/tags/cm-10.1.0-RC3
+f64f7e90f9c0dd6f4c52c66a5fd54d9af754c675 refs/tags/cm-10.1.0-RC4
+f64f7e90f9c0dd6f4c52c66a5fd54d9af754c675 refs/tags/cm-10.1.0-RC5
+f64f7e90f9c0dd6f4c52c66a5fd54d9af754c675 refs/tags/cm-10.1.1
+f64f7e90f9c0dd6f4c52c66a5fd54d9af754c675 refs/tags/cm-10.1.2
+f64f7e90f9c0dd6f4c52c66a5fd54d9af754c675 refs/tags/cm-10.1.3
+f64f7e90f9c0dd6f4c52c66a5fd54d9af754c675 refs/tags/cm-10.1.3-RC1
+f64f7e90f9c0dd6f4c52c66a5fd54d9af754c675 refs/tags/cm-10.1.3-RC2
+c90b7baf834fcf0b087e20e3b8a9a0fd3531f6cc refs/tags/cm-10.2-M1
+c90b7baf834fcf0b087e20e3b8a9a0fd3531f6cc refs/tags/cm-10.2.0
+c90b7baf834fcf0b087e20e3b8a9a0fd3531f6cc refs/tags/cm-10.2.1
+6900b4e2cc281db57d5e811f53a6f17eb0ebb78b refs/tags/cm-7.1.0
 + git remote -v
-phablet	../phablet-mirror/CyanogenMod/android_external_kernel-headers (fetch)
-phablet	../phablet-mirror/CyanogenMod/android_external_kernel-headers (push)
+github	https://github.com/CyanogenMod/android_external_libnfc-nxp (fetch)
+github	https://github.com/CyanogenMod/android_external_libnfc-nxp (push)
 
 
-================================================
-external/libnfc-nxp @ Fri Feb  7 19:23:06 CET 2014
-================================================
-WARNING: external/libnfc-nxp does not contain a Git repository

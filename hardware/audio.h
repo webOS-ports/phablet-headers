@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
- * Copyright (c) 2012, Code Aurora Forum. All rights reserved.
+ * Copyright (c) 2011-2014, The Linux Foundation. All rights reserved.
+ * Not a Contribution.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +21,6 @@
 #define ANDROID_AUDIO_HAL_INTERFACE_H
 
 #include <stdint.h>
-#include <string.h>
 #include <strings.h>
 #include <sys/cdefs.h>
 #include <sys/types.h>
@@ -30,6 +30,9 @@
 #include <hardware/hardware.h>
 #include <system/audio.h>
 #include <hardware/audio_effect.h>
+#ifdef AUDIO_LISTEN_ENABLED
+#include <listen_types.h>
+#endif
 
 __BEGIN_DECLS
 
@@ -73,6 +76,7 @@ __BEGIN_DECLS
 #define AUDIO_HARDWARE_MODULE_ID_A2DP "a2dp"
 #define AUDIO_HARDWARE_MODULE_ID_USB "usb"
 #define AUDIO_HARDWARE_MODULE_ID_REMOTE_SUBMIX "r_submix"
+#define AUDIO_HARDWARE_MODULE_ID_CODEC_OFFLOAD "codec_offload"
 
 /**************************************/
 
@@ -123,6 +127,31 @@ __BEGIN_DECLS
  * "sup_sampling_rates=44100|48000" */
 #define AUDIO_PARAMETER_STREAM_SUP_SAMPLING_RATES "sup_sampling_rates"
 
+/**
+ * audio codec parameters
+ */
+
+#define AUDIO_OFFLOAD_CODEC_PARAMS "music_offload_codec_param"
+#define AUDIO_OFFLOAD_CODEC_BIT_PER_SAMPLE "music_offload_bit_per_sample"
+#define AUDIO_OFFLOAD_CODEC_BIT_RATE "music_offload_bit_rate"
+#define AUDIO_OFFLOAD_CODEC_AVG_BIT_RATE "music_offload_avg_bit_rate"
+#define AUDIO_OFFLOAD_CODEC_ID "music_offload_codec_id"
+#define AUDIO_OFFLOAD_CODEC_BLOCK_ALIGN "music_offload_block_align"
+#define AUDIO_OFFLOAD_CODEC_SAMPLE_RATE "music_offload_sample_rate"
+#define AUDIO_OFFLOAD_CODEC_ENCODE_OPTION "music_offload_encode_option"
+#define AUDIO_OFFLOAD_CODEC_NUM_CHANNEL  "music_offload_num_channels"
+#define AUDIO_OFFLOAD_CODEC_DOWN_SAMPLING  "music_offload_down_sampling"
+#define AUDIO_OFFLOAD_CODEC_DELAY_SAMPLES  "delay_samples"
+#define AUDIO_OFFLOAD_CODEC_PADDING_SAMPLES  "padding_samples"
+#define AUDIO_OFFLOAD_CODEC_WMA_FORMAT_TAG "music_offload_wma_format_tag"
+#define AUDIO_OFFLOAD_CODEC_WMA_BLOCK_ALIGN "music_offload_wma_block_align"
+#define AUDIO_OFFLOAD_CODEC_WMA_BIT_PER_SAMPLE "music_offload_wma_bit_per_sample"
+#define AUDIO_OFFLOAD_CODEC_WMA_CHANNEL_MASK "music_offload_wma_channel_mask"
+#define AUDIO_OFFLOAD_CODEC_WMA_ENCODE_OPTION "music_offload_wma_encode_option"
+#define AUDIO_OFFLOAD_CODEC_WMA_ENCODE_OPTION1"music_offload_wma_encode_option1"
+#define AUDIO_OFFLOAD_CODEC_WMA_ENCODE_OPTION2 "music_offload_wma_encode_option2"
+#define AUDIO_OFFLOAD_CODEC_FORMAT  "music_offload_codec_format"
+
 /* Query handle fm parameter*/
 #define AUDIO_PARAMETER_KEY_HANDLE_FM "handle_fm"
 
@@ -140,18 +169,38 @@ __BEGIN_DECLS
 
 /* Query ADSP Status */
 #define AUDIO_PARAMETER_KEY_ADSP_STATUS "ADSP_STATUS"
+
+/* Query Sound Card Status */
+#define AUDIO_PARAMETER_KEY_SND_CARD_STATUS "SND_CARD_STATUS"
+
+/* Query if Proxy can be Opend */
+#define AUDIO_CAN_OPEN_PROXY "can_open_proxy"
+
+/* Query fm volume */
+#define AUDIO_PARAMETER_KEY_FM_VOLUME "fm_volume"
+
 /**************************************/
 
-/* common audio stream configuration parameters */
+/* common audio stream configuration parameters
+ * You should memset() the entire structure to zero before use to
+ * ensure forward compatibility
+ */
 struct audio_config {
     uint32_t sample_rate;
     audio_channel_mask_t channel_mask;
     audio_format_t  format;
+    audio_offload_info_t offload_info;
 };
-
 typedef struct audio_config audio_config_t;
-#ifdef QCOM_HARDWARE
-typedef struct buf_info;
+
+#ifdef QCOM_DIRECTTRACK
+/** Structure to save buffer information for applying effects for
+ *  LPA buffers */
+struct buf_info {
+    int bufsize;
+    int nBufs;
+    int **buffers;
+};
 #endif
 
 /* common audio stream parameters and operations */
@@ -238,6 +287,22 @@ struct audio_stream {
 };
 typedef struct audio_stream audio_stream_t;
 
+/* type of asynchronous write callback events. Mutually exclusive */
+typedef enum {
+    STREAM_CBK_EVENT_WRITE_READY, /* non blocking write completed */
+    STREAM_CBK_EVENT_DRAIN_READY  /* drain completed */
+} stream_callback_event_t;
+
+typedef int (*stream_callback_t)(stream_callback_event_t event, void *param, void *cookie);
+
+/* type of drain requested to audio_stream_out->drain(). Mutually exclusive */
+typedef enum {
+    AUDIO_DRAIN_ALL,            /* drain() returns when all data has been played */
+    AUDIO_DRAIN_EARLY_NOTIFY    /* drain() returns a short time before all data
+                                   from the current track has been played to
+                                   give time for gapless track switch */
+} audio_drain_type_t;
+
 /**
  * audio_stream_out is the abstraction interface for the audio output hardware.
  *
@@ -267,6 +332,13 @@ struct audio_stream_out {
      * negative status_t. If at least one frame was written successfully prior to the error,
      * it is suggested that the driver return that successful (short) byte count
      * and then return an error in the subsequent call.
+     *
+     * If set_callback() has previously been called to enable non-blocking mode
+     * the write() is not allowed to block. It must write only the number of
+     * bytes that currently fit in the driver/hardware buffer and then return
+     * this byte count. If this is less than the requested write size the
+     * callback function must be called when more space is available in the
+     * driver/hardware buffer.
      */
     ssize_t (*write)(struct audio_stream_out *stream, const void* buffer,
                      size_t bytes);
@@ -277,21 +349,12 @@ struct audio_stream_out {
     int (*get_render_position)(const struct audio_stream_out *stream,
                                uint32_t *dsp_frames);
 
-#ifdef QCOM_HARDWARE
+#ifndef ICS_AUDIO_BLOB
+#ifdef QCOM_DIRECTTRACK
     /**
      * start audio data rendering
      */
     int (*start)(struct audio_stream_out *stream);
-
-    /**
-     * pause audio rendering
-     */
-    int (*pause)(struct audio_stream_out *stream);
-
-    /**
-     * flush audio data with driver
-     */
-    int (*flush)(struct audio_stream_out *stream);
 
     /**
      * stop audio data rendering
@@ -305,7 +368,82 @@ struct audio_stream_out {
      */
     int (*get_next_write_timestamp)(const struct audio_stream_out *stream,
                                     int64_t *timestamp);
-#ifdef QCOM_HARDWARE
+
+    /**
+     * set the callback function for notifying completion of non-blocking
+     * write and drain.
+     * Calling this function implies that all future write() and drain()
+     * must be non-blocking and use the callback to signal completion.
+     */
+    int (*set_callback)(struct audio_stream_out *stream,
+            stream_callback_t callback, void *cookie);
+
+    /**
+     * Notifies to the audio driver to stop playback however the queued buffers are
+     * retained by the hardware. Useful for implementing pause/resume. Empty implementation
+     * if not supported however should be implemented for hardware with non-trivial
+     * latency. In the pause state audio hardware could still be using power. User may
+     * consider calling suspend after a timeout.
+     *
+     * Implementation of this function is mandatory for offloaded playback.
+     */
+    int (*pause)(struct audio_stream_out* stream);
+
+    /**
+     * Notifies to the audio driver to resume playback following a pause.
+     * Returns error if called without matching pause.
+     *
+     * Implementation of this function is mandatory for offloaded playback.
+     */
+    int (*resume)(struct audio_stream_out* stream);
+
+    /**
+     * Requests notification when data buffered by the driver/hardware has
+     * been played. If set_callback() has previously been called to enable
+     * non-blocking mode, the drain() must not block, instead it should return
+     * quickly and completion of the drain is notified through the callback.
+     * If set_callback() has not been called, the drain() must block until
+     * completion.
+     * If type==AUDIO_DRAIN_ALL, the drain completes when all previously written
+     * data has been played.
+     * If type==AUDIO_DRAIN_EARLY_NOTIFY, the drain completes shortly before all
+     * data for the current track has played to allow time for the framework
+     * to perform a gapless track switch.
+     *
+     * Drain must return immediately on stop() and flush() call
+     *
+     * Implementation of this function is mandatory for offloaded playback.
+     */
+    int (*drain)(struct audio_stream_out* stream, audio_drain_type_t type );
+
+    /**
+     * Notifies to the audio driver to flush the queued data. Stream must already
+     * be paused before calling flush().
+     *
+     * Implementation of this function is mandatory for offloaded playback.
+     */
+   int (*flush)(struct audio_stream_out* stream);
+
+    /**
+     * Return a recent count of the number of audio frames presented to an external observer.
+     * This excludes frames which have been written but are still in the pipeline.
+     * The count is not reset to zero when output enters standby.
+     * Also returns the value of CLOCK_MONOTONIC as of this presentation count.
+     * The returned count is expected to be 'recent',
+     * but does not need to be the most recent possible value.
+     * However, the associated time should correspond to whatever count is returned.
+     * Example:  assume that N+M frames have been presented, where M is a 'small' number.
+     * Then it is permissible to return N instead of N+M,
+     * and the timestamp should correspond to N rather than N+M.
+     * The terms 'recent' and 'small' are not defined.
+     * They reflect the quality of the implementation.
+     *
+     * 3.0 and higher only.
+     */
+    int (*get_presentation_position)(const struct audio_stream_out *stream,
+                               uint64_t *frames, struct timespec *timestamp);
+#endif
+#ifdef QCOM_DIRECTTRACK
     /**
     * return the current timestamp after quering to the driver
      */
@@ -329,48 +467,8 @@ struct audio_stream_out {
     int (*is_buffer_available) (const struct audio_stream_out *stream,
                                      int *isAvail);
 #endif
-
 };
 typedef struct audio_stream_out audio_stream_out_t;
-
-#ifdef QCOM_HARDWARE
-/**
- * audio_broadcast_stream is the abstraction interface for the
- * audio output hardware.
- *
- * It provides information about various properties of the audio output
- * hardware driver.
- */
-
-struct audio_broadcast_stream {
-    struct audio_stream common;
-
-    /**
-     * return the audio hardware driver latency in milli seconds.
-     */
-    uint32_t (*get_latency)(const struct audio_broadcast_stream *stream);
-
-    /**
-     * Use this method in situations where audio mixing is done in the
-     * hardware. This method serves as a direct interface with hardware,
-     * allowing you to directly set the volume as apposed to via the framework.
-     * This method might produce multiple PCM outputs or hardware accelerated
-     * codecs, such as MP3 or AAC.
-     */
-    int (*set_volume)(struct audio_broadcast_stream *stream, float left, float right);
-
-    int (*mute)(struct audio_broadcast_stream *stream, bool mute);
-
-    int (*start)(struct audio_broadcast_stream *stream, int64_t absTimeToStart);
-    /**
-     * write audio buffer to driver. Returns number of bytes written
-     */
-    ssize_t (*write)(struct audio_broadcast_stream *stream, const void* buffer,
-                     size_t bytes, int64_t timestamp, int audioType);
-
-};
-typedef struct audio_broadcast_stream audio_broadcast_stream_t;
-#endif
 
 struct audio_stream_in {
     struct audio_stream common;
@@ -406,49 +504,72 @@ typedef struct audio_stream_in audio_stream_in_t;
 static inline size_t audio_stream_frame_size(const struct audio_stream *s)
 {
     size_t chan_samp_sz;
-    uint32_t chan_mask = s->get_channels(s);
-    int format = s->get_format(s);
-
 #ifdef QCOM_HARDWARE
-    if (!s)
-        return 0;
+    audio_format_t format = s->get_format(s);
+    uint32_t chan_mask = s->get_channels(s);
+    if(audio_is_output_channel(chan_mask)) {
+        if (audio_is_linear_pcm(format) &&
+                format != AUDIO_FORMAT_PCM_8_24_BIT) {
+            chan_samp_sz = audio_bytes_per_sample(format);
+            return popcount(s->get_channels(s)) * chan_samp_sz;
+        }
+        return sizeof(int8_t);
+    } else if (audio_is_input_channel(chan_mask)) {
+        char *tmpparam;
+        int isParamEqual;
 
-    if (audio_is_input_channel(chan_mask)) {
+        if(!s)
+            return 0;
+
         chan_mask &= (AUDIO_CHANNEL_IN_STEREO | \
                       AUDIO_CHANNEL_IN_MONO | \
                       AUDIO_CHANNEL_IN_5POINT1);
+
+        tmpparam = s->get_parameters(s, "voip_flag");
+        isParamEqual = !strncmp(tmpparam,"voip_flag=1", sizeof("voip_flag=1"));
+        free(tmpparam);
+        if(isParamEqual) {
+            if(format != AUDIO_FORMAT_PCM_8_BIT)
+                return popcount(chan_mask) * sizeof(int16_t);
+            else
+                return popcount(chan_mask) * sizeof(int8_t);
+        }
+
+        switch (format) {
+
+        case AUDIO_FORMAT_AMR_NB:
+            chan_samp_sz = 32;
+            break;
+        case AUDIO_FORMAT_EVRC:
+            chan_samp_sz = 23;
+            break;
+        case AUDIO_FORMAT_QCELP:
+            chan_samp_sz = 35;
+            break;
+        case AUDIO_FORMAT_AMR_WB:
+            chan_samp_sz = 61;
+            break;
+        case AUDIO_FORMAT_PCM_16_BIT:
+            chan_samp_sz = sizeof(int16_t);
+            break;
+        case AUDIO_FORMAT_PCM_8_BIT:
+        default:
+            chan_samp_sz = sizeof(int8_t);
+            break;
+        }
+        return popcount(chan_mask) * chan_samp_sz;
+    }
+#else
+    audio_format_t format = s->get_format(s);
+
+    if (audio_is_linear_pcm(format) &&
+            format != AUDIO_FORMAT_PCM_8_24_BIT) {
+        chan_samp_sz = audio_bytes_per_sample(format);
+        return popcount(s->get_channels(s)) * chan_samp_sz;
     }
 
-    if(!strncmp(s->get_parameters(s, "voip_flag"),"voip_flag=1",sizeof("voip_flag=1"))) {
-        if(format != AUDIO_FORMAT_PCM_8_BIT)
-            return popcount(chan_mask) * sizeof(int16_t);
-        else
-            return popcount(chan_mask) * sizeof(int8_t);
-    }
+    return sizeof(int8_t);
 #endif
-
-    switch (format) {
-#ifdef QCOM_HARDWARE
-    case AUDIO_FORMAT_AMR_NB:
-        chan_samp_sz = 32;
-        break;
-    case AUDIO_FORMAT_EVRC:
-        chan_samp_sz = 23;
-        break;
-    case AUDIO_FORMAT_QCELP:
-        chan_samp_sz = 35;
-        break;
-#endif
-    case AUDIO_FORMAT_PCM_16_BIT:
-        chan_samp_sz = sizeof(int16_t);
-        break;
-    case AUDIO_FORMAT_PCM_8_BIT:
-    default:
-        chan_samp_sz = sizeof(int8_t);
-        break;
-    }
-
-    return popcount(chan_mask) * chan_samp_sz;
 }
 
 
@@ -507,11 +628,6 @@ struct audio_hw_device {
     int (*get_master_volume)(struct audio_hw_device *dev, float *volume);
 #endif
 
-#ifdef QCOM_FM_ENABLED
-    /** set the fm audio volume. Range is between 0.0 and 1.0 */
-    int (*set_fm_volume)(struct audio_hw_device *dev, float volume);
-#endif
-
     /**
      * set_mode is called when the audio mode changes. AUDIO_MODE_NORMAL mode
      * is for standard audio playback, AUDIO_MODE_RINGTONE when a ringtone is
@@ -560,28 +676,8 @@ struct audio_hw_device {
                               struct audio_stream_out **out);
 #endif
 
-#ifdef QCOM_ICS_LPA_COMPAT
-    /** This method creates and opens the audio hardware output session */
-    int (*open_output_session)(struct audio_hw_device *dev, uint32_t devices,
-                              int *format, int sessionId,
-                              struct audio_stream_out **out);
-#endif
-
     void (*close_output_stream)(struct audio_hw_device *dev,
                                 struct audio_stream_out* stream_out);
-
-#ifdef QCOM_HARDWARE
-    /** This method creates and opens the audio hardware output
-     *  for broadcast stream */
-    int (*open_broadcast_stream)(struct audio_hw_device *dev, uint32_t devices,
-                                 int format, uint32_t channels,
-                                 uint32_t sample_rate,
-                                 uint32_t audio_source,
-                                 struct audio_broadcast_stream **out);
-
-    void (*close_broadcast_stream)(struct audio_hw_device *dev,
-                                   struct audio_broadcast_stream *out);
-#endif
 
     /** This method creates and opens the audio hardware input stream */
 #ifndef ICS_AUDIO_BLOB
@@ -620,6 +716,29 @@ struct audio_hw_device {
      */
     int (*get_master_mute)(struct audio_hw_device *dev, bool *mute);
 #endif
+
+#ifdef AUDIO_LISTEN_ENABLED
+    /** This method creates the listen session and returns handle */
+    int (*open_listen_session)(struct audio_hw_device *dev,
+                              listen_open_params_t *params,
+                              struct listen_session** handle);
+
+    /** This method closes the listen session  */
+    int (*close_listen_session)(struct audio_hw_device *dev,
+                                struct listen_session* handle);
+
+    /** This method sets the mad observer callback  */
+    int (*set_mad_observer)(struct audio_hw_device *dev,
+                            listen_callback_t cb_func);
+
+    /**
+     *   This method is used for setting listen hal specfic parameters.
+     *  If multiple paramets are set in one call and setting any one of them
+     *  fails it will return failure.
+     */
+    int (*listen_set_parameters)(struct audio_hw_device *dev,
+                                 const char *kv_pairs);
+#endif
 };
 typedef struct audio_hw_device audio_hw_device_t;
 
@@ -637,15 +756,7 @@ static inline int audio_hw_device_close(struct audio_hw_device* device)
     return device->common.close(&device->common);
 }
 
-#ifdef QCOM_HARDWARE
-/** Structure to save buffer information for applying effects for
- *  LPA buffers */
-struct buf_info {
-    int bufsize;
-    int nBufs;
-    int **buffers;
-};
-
+#ifdef QCOM_DIRECTTRACK
 #ifdef __cplusplus
 /**
  *Observer class to post the Events from HAL to Flinger
